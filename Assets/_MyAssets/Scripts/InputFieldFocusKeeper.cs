@@ -37,7 +37,7 @@ public class InputFieldFocusKeeper : MonoBehaviour
         inputField.Select();
         inputField.ActivateInputField();
         inputField.caretPosition = inputField.text.Length;
-        Debug.Log("InputFieldFocusKeeper: re-focused");
+        //Debug.Log("InputFieldFocusKeeper: re-focused");
     }
 
     private void ReSize()

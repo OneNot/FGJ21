@@ -39,7 +39,10 @@ public class TerminalHandler : MonoBehaviour
     private static Dictionary<string, Func<string[], string>> Commands = new Dictionary<string, Func<string[], string>>
     {
         {"cls", ClearScreen},
-        {"test", TestCommand}
+        {"test", TestCommand},
+        {"find", FindItemByName},
+        {"search", FindItemByName},
+        {"help", HelpCommand}
     };
 
     private void Awake() {
@@ -87,6 +90,8 @@ public class TerminalHandler : MonoBehaviour
             Func<string[], string> command = (Commands.ContainsKey(commandString) ? Commands[commandString] : null);
             if (command != null)
                 return command.Invoke(splitVal.ToArray());
+            else
+                return "Invalid command. Try 'help'";
         }
         return null;
     }
@@ -100,7 +105,27 @@ public class TerminalHandler : MonoBehaviour
 
 
 
+    private static string HelpCommand(string[] args)
+    {
+        if (args.Length == 0)
+        {
+            string helpString = "If the first word matches a command, it is called with the other words as arguments.\n" +
+            "LIST OF COMMANDS:\n" +
+            "help: this\n" +
+            "cls: clear screen\n" +
+            "find/search: display the drawer number where the given item name can be found. (arguments: item name)";
 
+            return helpString;
+        }
+        else if (args[0] == "help")
+            return "help: help?";
+        else if (args[0] == "cls")
+            return "cls: clears the screen";
+        else if (args[0] == "find" || args[0] == "search")
+            return "find/search: display the drawer number where the given item name can be found. (arguments: item name)";
+        else
+            return "help ERROR: Invalid arguments.";
+    }
     private static string ClearScreen(string[] args)
     {
         foreach (Transform t in Instance.TerminalScrollRect.transform)
@@ -117,5 +142,23 @@ public class TerminalHandler : MonoBehaviour
             return "Test command ran with arguments: " + string.Join(", ", args);
         else
             return "Test command ran";
+    }
+    private static string FindItemByName(string[] args)
+    {
+        if (args.Length == 0)
+            return "find ERROR: MissingParameterException";
+        else
+        {
+            
+            string combinedArgs = string.Join(" ", args);
+            Item item = ItemHandler.Instance.FindFromActiveItemsByName(combinedArgs);
+            if (item == null)
+                return "Item: \""+combinedArgs+"\" not found";
+            else
+            {
+                return "Item: \"" + combinedArgs + "\" can be found in drawer #" + item.ContainingDrawer.DrawerID;
+            }
+            
+        }
     }
 }
